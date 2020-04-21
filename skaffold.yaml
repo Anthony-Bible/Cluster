@@ -1,0 +1,14 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: mysite-deployment
+build:
+  artifacts:
+  - image: mysite-container
+  local:
+    useDockerCLI: true
+deploy:
+  kubectl:
+    manifests:
+    - mysite-dev.yml
+    - redis.yml

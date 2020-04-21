@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mysite
+  namespace: default
+  annotations:
+   kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - host: register.anthonybible.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: registration-service
+          servicePort: 80
+  - host: www.register.anthonybible.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: registration-service
+          servicePort: 80
+  tls:
+    - hosts:
+      - dev-register.anthonybible.com
+      secretName: dev-register.anthonybible.com-cert

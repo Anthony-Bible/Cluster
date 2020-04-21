@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: default
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: dev-register.anthonybible.com-cert
+  namespace: default
+spec:
+  commonName: dev-register.anthonybible.com
+  secretName: dev-register.anthonybible.com-cert
+  issuerRef:
+    name: selfsigned

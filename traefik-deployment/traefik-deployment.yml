@@ -1,0 +1,109 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+  namespace: default
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik-ingress-controller
+  namespace: default
+  labels:
+    k8s-app: traefik-ingress-lb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      containers:
+      - image: traefik:v1.7
+        name: traefik-ingress-lb
+        ports:
+        - name: http
+          containerPort: 80
+          hostPort: 80
+        - name: admin
+          containerPort: 8080
+          hostPort: 8080
+        - name: https
+          containerPort: 443
+          hostPort: 443
+        args:
+        - --api
+        - --kubernetes
+        - --logLevel=DEBUG
+        - --defaultentrypoints=http,https
+        - --entrypoints=Name:https Address::443 TLS
+        - --entrypoints=Name:http Address::80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik-ingress-service
+  namespace: default
+spec:
+  selector:
+    k8s-app: traefik-ingress-lb
+  ports:
+    - protocol: TCP
+      port: 80
+      name: web
+    - protocol: TCP
+      port: 8080
+      name: admin
+    - protocol: TCP
+      port: 443
+      name: sslweb
+  type: LoadBalancer 
+---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  name: traefik-conf
+#data:
+#  traefik.toml: |
+#    # traefik.toml
+#    logLevel = "DEBUG"
+#
+#    [traefikLog]
+#      filePath = "log/traefik.log"
+#      format   = "json"
+#
+#    [accessLog]
+#      filePath = "log/access.log"
+#      format = "json"
+#    
+#    defaultEntryPoints = ["http"]
+#    
+#    [entryPoints]
+#        [entryPoints.http]
+#        users =  ['admin:$apr1$ZywpxeoS$6U80kYPG116slxBceEsVz0']
+#        address = ":9090"
+#    
+#    [web]
+#    address = ":8095"
+#    
+#    [backends]
+#      [backends.backend]
+#         [backends.backend.LoadBalancer]
+#           method = "wrr"
+#         [backends.backend.servers.server1]
+#         url = ":8080"
+#         weight = 1
+#    
+#    [frontends]
+#      [frontends.frontend1]
+#      backend = "backend"
+#        [frontends.frontend1.routes.test_1]
+#        rule = "Host:dashboard-traefik.anthonybible.com"
+#

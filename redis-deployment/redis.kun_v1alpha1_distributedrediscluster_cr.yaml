@@ -1,0 +1,17 @@
+apiVersion: redis.kun/v1alpha1
+kind: DistributedRedisCluster
+metadata:
+  annotations:
+    redis.kun/scope: cluster-scoped
+    # if your operator run as cluster-scoped, add this annotations
+  name: example-distributedrediscluster
+spec:
+  # Add fields here
+  masterSize: 3
+  clusterReplicas: 2
+  image: redis:5.0.8-alpine
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      memory: 100Mi
