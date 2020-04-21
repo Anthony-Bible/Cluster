@@ -15,7 +15,7 @@ spec:
       labels:
         app: registration
         name: "mysite"
-        phase: "dev" 
+        phase: "stage" 
     spec:
       containers:
       - name: site-fpm

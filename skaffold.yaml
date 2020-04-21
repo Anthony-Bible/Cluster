@@ -1,14 +1,27 @@
-apiVersion: skaffold/v2beta1
+apiVersion: skaffold/v2beta2
 kind: Config
 metadata:
   name: mysite-deployment
 build:
   artifacts:
-  - image: mysite-container
-  local:
-    useDockerCLI: true
+  - image: gimpyb/myphp-container
+    context: site-fpm
+  - image: gimpyb/mysite-container
 deploy:
   kubectl:
     manifests:
-    - mysite-dev.yml
-    - redis.yml
+    - mysite-stage.yml
+    - cert-manager-deployment/selfsigned-dev.yaml
+    - metallb/metallb-conf.yaml
+    - redis-deployment/cluster_role.yaml
+    - redis-deployment/cluster_role_binding.yaml
+    - redis-deployment/operator.yaml
+    - redis-deployment/redis.kun_distributedredisclusters_crd.yaml
+    - redis-deployment/redis.kun_redisclusterbackups_crd.yaml
+    - redis-deployment/redis.kun_v1alpha1_distributedrediscluster_cr.yaml
+    - redis-deployment/service_account.yaml
+    - traefik-deployment/domains.yml
+    - traefik-deployment/service-acc.yml
+    - traefik-deployment/traefik-clb.yml
+    - traefik-deployment/traefik-cr.yaml
+    - traefik-deployment/traefik-deployment.yml
