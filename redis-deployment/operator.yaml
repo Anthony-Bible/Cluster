@@ -16,7 +16,7 @@ spec:
       containers:
         - name: redis-cluster-operator
           # Replace this with the built image name
-          image: fishu/redis-cluster-operator:latest
+          image: gimpyb/redis-cluster-operator-arm:0.2.2
           command:
           - redis-cluster-operator
           args:
