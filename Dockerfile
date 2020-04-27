@@ -10,7 +10,7 @@ RUN test ! -f /usr/local/bin/aws && ln -s /opt/aws-cliv2/env/bin/aws /usr/local/
 RUN test ! -f /usr/local/bin/aws_bash_completer && ln -s /opt/aws-cliv2/env/bin/aws_bash_complete
 RUN  openssl dhparam -out /etc/nginx/dhparam.pem 2048 
 
-COPY --chown=82 registration /var/www/html
+COPY --chown=82 registration/ /var/www/html
 RUN mkdir /root/.aws
 COPY .aws/ /root/.aws/
 
