@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: redis-cluster-operator
-  namespace: default
+  namespace: kube-system
 roleRef:
   kind: ClusterRole
   name: redis-cluster-operator

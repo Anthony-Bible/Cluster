@@ -19,6 +19,8 @@ rules:
       - ""
     resources:
       - configmaps
+      - pods_exec
+      - pods
       - secrets
       - services
       - events
@@ -35,6 +37,7 @@ rules:
       - ""
     resources:
       - namespaces
+      - pods
     verbs:
       - get
       - list
