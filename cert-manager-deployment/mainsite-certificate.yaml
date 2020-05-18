@@ -1,0 +1,14 @@
+---
+    apiVersion: cert-manager.io/v1alpha2
+    kind: Certificate
+    metadata:
+      name: anthony.bible-cert
+      namespace: kube-system
+    spec:
+      dnsNames:
+        - anthony.bible
+      commonName: anthony.bible
+      secretName: anthony.bible-cert
+      issuerRef:
+        name: letsencrypt
+        kind: ClusterIssuer

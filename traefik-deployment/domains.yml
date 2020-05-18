@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: mysite
-  namespace: default
   annotations:
    kubernetes.io/ingress.class: "traefik"
 spec:
@@ -14,7 +13,17 @@ spec:
         backend:
           serviceName: registration-service
           servicePort: 80
+  - host: anthony.bible
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: mainsite-service
+          servicePort: 80
   tls:
     - hosts:
       - reg.anthony.bible
       secretName: reg.anthony.bible-cert
+    - hosts:
+      - anthony.bible
+      secretName: anthony.bible-cert
