@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysite-deployment
-  namespace: default
   labels:
     app: registration
 spec:
@@ -16,10 +15,12 @@ spec:
         app: registration
         name: "mysite"
         phase: "dev" 
+      annotations:
+                iam.amazonaws.com/role: arn:aws:iam::842805395457:role/Test_ec2ForSDK
     spec:
       containers:
       - name: site-fpm
-        image: gimpyb/myphp-container:0.0.3
+        image: gimpyb/myphp-container:0.0.6
         volumeMounts:
         - name: php-socket
           mountPath: /sock
@@ -40,8 +41,8 @@ spec:
           mountPath: /etc/nginx
       initContainers:
       - name: setup
-        image:  gimpyb/mysite-container:0.0.37
-        command: ["sh", "-c", " ls -lah /root/.aws/ && aws ssm get-parameters-by-path --path /mysite/dev/ --recursive --with-decryption --output text --query \"Parameters[].[Name,Value]\" | sed -E 's#/mysite/dev/([^[:space:]]*)[[:space:]](.*)#export \\1=\"\\2\"#' | sed -E 's/(export)([[:space:]].*=)/\\1\\U\\2/' > /var/www/html/.env && rsync -avzh /var/www/html/ /code && rsync -avzh /etc/nginx/ /nginx && rsync -avzh /usr/local/etc/php-fpm.d/ /php"]
+        image:  gimpyb/mysite-container-prod:0.0.43
+        command: ["sh", "-c", "aws configure set default.region us-west-2 && ls -lah /root/.aws/ && aws ssm get-parameters-by-path --path /mysite/dev/ --recursive --with-decryption --output text --query \"Parameters[].[Name,Value]\" | sed -E 's#/mysite/dev/([^[:space:]]*)[[:space:]](.*)#export \\1=\"\\2\"#' | sed -E 's/(export)([[:space:]].*=)/\\1\\U\\2/' > /var/www/html/.env && rsync -avzh /var/www/html/ /code && rsync -avzh /etc/nginx/ /nginx && rsync -avzh /usr/local/etc/php-fpm.d/ /php"]
         volumeMounts:
         - name: html
           mountPath: /code
@@ -69,7 +70,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: registration-service 
-  namespace: default
 spec:
   selector:
     app: registration
