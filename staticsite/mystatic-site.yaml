@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: site-fpm
-        image: gimpyb/myphp-container:0.0.6
+        image: gimpyb/myphp-container:0.0.7
         volumeMounts:
         - name: php-socket
           mountPath: /sock
