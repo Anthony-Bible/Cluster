@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: mysite-deployment
   labels:
-    app: registration
+    app: mainsite 
 spec:
   selector:
     matchLabels:
-      app: registration 
+      app: mainsite 
   replicas: 4
   template: 
     metadata:
       labels:
-        app: registration
-        name: "mysite"
-        phase: "dev" 
+        app: mainsite 
+        name: "mystaticsite"
+        phase: "prod" 
       annotations:
                 iam.amazonaws.com/role: arn:aws:iam::842805395457:role/Test_ec2ForSDK
     spec:
@@ -41,7 +41,7 @@ spec:
           mountPath: /etc/nginx
       initContainers:
       - name: setup
-        image:  gimpyb/mysite-container-prod:0.0.43
+        image:  gimpyb/mystaticsite-container-prod:0.0.1
         command: ["sh", "-c", "aws configure set default.region us-west-2 && ls -lah /root/.aws/ && aws ssm get-parameters-by-path --path /mysite/dev/ --recursive --with-decryption --output text --query \"Parameters[].[Name,Value]\" | sed -E 's#/mysite/dev/([^[:space:]]*)[[:space:]](.*)#export \\1=\"\\2\"#' | sed -E 's/(export)([[:space:]].*=)/\\1\\U\\2/' > /var/www/html/.env && rsync -avzh /var/www/html/ /code && rsync -avzh /etc/nginx/ /nginx && rsync -avzh /usr/local/etc/php-fpm.d/ /php"]
         volumeMounts:
         - name: html
@@ -65,10 +65,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: registration-service 
+  name: mainsite-service 
 spec:
   selector:
-    app: registration
+    app: mainsite 
   ports:
     - name: web 
       port: 80
