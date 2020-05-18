@@ -4,6 +4,7 @@ metadata:
   name: mysite
   annotations:
    kubernetes.io/ingress.class: "traefik"
+   traefik.ingress.kubernetes.io/redirect-entry-point: https
 spec:
   rules:
   - host: reg.anthony.bible
