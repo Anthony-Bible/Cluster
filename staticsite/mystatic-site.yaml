@@ -41,7 +41,7 @@ spec:
           mountPath: /etc/nginx
       initContainers:
       - name: setup
-        image:  gimpyb/mystaticsite-container-prod:0.0.4
+        image:  gimpyb/mystaticsite-container-prod:0.0.28
         command: ["sh", "-c", "aws configure set default.region us-west-2 && ls -lah /root/.aws/ && aws ssm get-parameters-by-path --path /mysite/dev/ --recursive --with-decryption --output text --query \"Parameters[].[Name,Value]\" | sed -E 's#/mysite/dev/([^[:space:]]*)[[:space:]](.*)#export \\1=\"\\2\"#' | sed -E 's/(export)([[:space:]].*=)/\\1\\U\\2/' > /var/www/html/.env && rsync -avzh /var/www/html/ /code && rsync -avzh /etc/nginx/ /nginx && rsync -avzh /usr/local/etc/php-fpm.d/ /php"]
         volumeMounts:
         - name: html
