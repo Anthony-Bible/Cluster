@@ -16,7 +16,7 @@ spec:
         name: "mysite"
         phase: "dev" 
       annotations:
-                iam.amazonaws.com/role: arn:aws:iam::842805395457:role/Test_ec2ForSDK
+        iam.amazonaws.com/role: arn:aws:iam::842805395457:role/Test_ec2ForSDK
     spec:
       containers:
       - name: site-fpm
@@ -69,6 +69,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: reg.anthony.bible
   name: registration-service 
 spec:
   selector:
@@ -76,4 +78,4 @@ spec:
   ports:
     - name: web 
       port: 80
-      targetPort: 80 
+      targetPort: 80  
