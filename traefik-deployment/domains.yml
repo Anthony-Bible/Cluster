@@ -1,10 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1beta1 
 kind: Ingress
 metadata:
   name: mysite
   annotations:
-   kubernetes.io/ingress.class: "traefik"
-   traefik.ingress.kubernetes.io/redirect-entry-point: https
+   kubernetes.io/ingress.class: traefik
+   traefik.ingress.kubernetes.io/redirect-entry-point: https 
+   traefik.ingress.kubernetes.io/redirect-permanent: "true"
+   cert-manager.io/cluster-issuer: letsencrypt
+   #traefik.ingress.kubernetes.io/router.middlewares: test-redirectscheme
+   # traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   rules:
   - host: reg.anthony.bible
@@ -27,4 +31,4 @@ spec:
       secretName: reg.anthony.bible-cert
     - hosts:
       - anthony.bible
-      secretName: anthony.bible-cert
+      secretName: www.anthony.bible-cert
