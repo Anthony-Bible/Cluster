@@ -1,5 +1,5 @@
 FROM php:7.4-fpm-alpine
-RUN apk update && apk add python3 python3-dev git build-base libffi-dev openssl-dev openssl nginx rsync sed
+RUN apk update && apk add python3 python3-dev git build-base libffi-dev openssl-dev openssl nginx rsync sed py-pip
 RUN python3 -m venv /opt/aws-cliv2/env --prompt aws-cliv2
 RUN source /opt/aws-cliv2/env/bin/activate
 
