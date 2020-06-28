@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mystaticsite-deployment
+  namespace: kube-system
   labels:
     app: mainsite 
 spec:
@@ -29,7 +30,7 @@ spec:
         - name: php-config 
           mountPath: "/usr/local/etc/php-fpm.d" 
       - name: nginx
-        image: nginx:1.17.9-alpine
+        image: nginx:1.19.0-alpine
         ports:
         - containerPort: 80
         volumeMounts:
@@ -41,7 +42,7 @@ spec:
           mountPath: /etc/nginx
       initContainers:
       - name: setup
-        image:  gimpyb/mystaticsite-container-prod:0.0.28
+        image:  gimpyb/mystaticsite-container-prod:0.0.33
         command: ["sh", "-c", "aws configure set default.region us-west-2 && ls -lah /root/.aws/ && aws ssm get-parameters-by-path --path /mysite/dev/ --recursive --with-decryption --output text --query \"Parameters[].[Name,Value]\" | sed -E 's#/mysite/dev/([^[:space:]]*)[[:space:]](.*)#export \\1=\"\\2\"#' | sed -E 's/(export)([[:space:]].*=)/\\1\\U\\2/' > /var/www/html/.env && rsync -avzh /var/www/html/ /code && rsync -avzh /etc/nginx/ /nginx && rsync -avzh /usr/local/etc/php-fpm.d/ /php"]
         volumeMounts:
         - name: html
@@ -66,6 +67,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mainsite-service 
+  namespace: kube-system
 spec:
   selector:
     app: mainsite 
