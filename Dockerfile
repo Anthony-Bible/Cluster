@@ -1,8 +1,7 @@
 FROM php:7.4-fpm-alpine
 RUN apk update && apk add python3 python3-dev git build-base libffi-dev openssl-dev openssl nginx rsync sed \
     python3 -m ensurepip ;\
-    python3 -m venv /opt/aws-cliv2/env --prompt aws-cliv2 ;\
-    source /opt/aws-cliv2/env/bin/activate ;\
+    python3 -m venv /opt/aws-cliv2/env --prompt aws-cliv2 && source /opt/aws-cliv2/env/bin/activate ;\
     pip3 install git+https://github.com/boto/botocore.git@v2 --upgrade ;\
     pip3 install git+https://github.com/aws/aws-cli.git@v2 --upgrade; 
 RUN test ! -f /usr/local/bin/aws && ln -s /opt/aws-cliv2/env/bin/aws /usr/local/bin/aws; \
