@@ -1,14 +1,13 @@
 FROM php:7.4-fpm-alpine
-RUN apk update && apk add python3 python3-dev git build-base libffi-dev openssl-dev openssl nginx rsync sed
-RUN python3 -m venv /opt/aws-cliv2/env --prompt aws-cliv2
-RUN source /opt/aws-cliv2/env/bin/activate
-
-RUN pip3 install git+https://github.com/boto/botocore.git@v2 --upgrade
-RUN pip3 install git+https://github.com/aws/aws-cli.git@v2 --upgrade
-
-RUN test ! -f /usr/local/bin/aws && ln -s /opt/aws-cliv2/env/bin/aws /usr/local/bin/aws
-RUN test ! -f /usr/local/bin/aws_bash_completer && ln -s /opt/aws-cliv2/env/bin/aws_bash_complete
-RUN  openssl dhparam -out /etc/nginx/dhparam.pem 2048 
+RUN apk update && apk add python3 python3-dev git build-base libffi-dev openssl-dev openssl nginx rsync sed \
+    python3 -m ensurepip; \
+    python3 -m venv /opt/aws-cliv2/env --prompt aws-cliv2; \
+    source /opt/aws-cliv2/env/bin/activate; \
+    pip3 install git+https://github.com/boto/botocore.git@v2 --upgrade; \
+    pip3 install git+https://github.com/aws/aws-cli.git@v2 --upgrade; \
+    test ! -f /usr/local/bin/aws && ln -s /opt/aws-cliv2/env/bin/aws /usr/local/bin/aws; \
+    test ! -f /usr/local/bin/aws_bash_completer && ln -s /opt/aws-cliv2/env/bin/aws_bash_complete; \
+    openssl dhparam -out /etc/nginx/dhparam.pem 2048;
 
 COPY --chown=82 registration/ /var/www/html
 RUN mkdir /root/.aws
