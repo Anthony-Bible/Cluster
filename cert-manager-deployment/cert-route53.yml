@@ -1,0 +1,28 @@
+---
+    apiVersion: cert-manager.io/v1alpha2
+    kind: Certificate
+    metadata:
+      name: anthony.bible-cert-route53
+      namespace: istio-system 
+    spec:
+      dnsNames:
+        - anthony.bible
+      commonName: anthony.bible
+      secretName: anthony.bible-cert
+      issuerRef:
+        name: letsencrypt-prod-route53
+        kind: ClusterIssuer
+---
+    apiVersion: cert-manager.io/v1alpha2
+    kind: Certificate
+    metadata:
+      name: reg.anthony.bible-cert-route53
+      namespace: istio-system 
+    spec:
+      dnsNames:
+        - reg.anthony.bible
+      commonName: reg.anthony.bible
+      secretName: reg.anthony.bible-cert
+      issuerRef:
+        name: letsencrypt-prod-route53
+        kind: ClusterIssuer
