@@ -28,8 +28,16 @@ spec:
           mountPath: "/var/www/html"
         - name: php-config 
           mountPath: "/usr/local/etc/php-fpm.d" 
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "10m"
       - name: nginx
         image: nginx:1.19.0-alpine
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "10m"        
         ports:
         - containerPort: 80
         volumeMounts:
@@ -41,7 +49,7 @@ spec:
           mountPath: /etc/nginx
       initContainers:
       - name: setup
-        image:  gimpyb/mysite-container-prod:0.0.43
+        image:  gimpyb/mysite-container-prod:0.0.44
         command: ["sh", "-c", "aws configure set default.region us-west-2 && ls -lah /root/.aws/ && aws ssm get-parameters-by-path --path /mysite/dev/ --recursive --with-decryption --output text --query \"Parameters[].[Name,Value]\" | sed -E 's#/mysite/dev/([^[:space:]]*)[[:space:]](.*)#export \\1=\"\\2\"#' | sed -E 's/(export)([[:space:]].*=)/\\1\\U\\2/' > /var/www/html/.env && rsync -avzh /var/www/html/ /code && rsync -avzh /etc/nginx/ /nginx && rsync -avzh /usr/local/etc/php-fpm.d/ /php"]
         volumeMounts:
         - name: html
