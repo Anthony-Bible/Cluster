@@ -19,6 +19,10 @@ rules:
 - apiGroups: [""]
   resources: ["nodes"]
   verbs: ["list","watch"]
+- apiGroups: ["networking.istio.io"]
+  resources: ["gateways"]
+  verbs: ["get", "watch", "list" ]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -63,6 +67,7 @@ spec:
         - --provider=aws       
         - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
         - --registry=txt
+        - --source=istio-gateway
         - --txt-owner-id=my-hostedzone-identifier
         - --txt-prefix=""
         - --log-level=debug
