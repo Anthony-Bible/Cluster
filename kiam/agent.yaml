@@ -45,7 +45,7 @@ spec:
           args:
             - agent
             - --iptables
-            - --host-interface=cbr0
+            - --host-interface=cali+
             - --json-log
             - --port=8181
             - --level=warn
@@ -53,7 +53,8 @@ spec:
             - --key=/etc/ssl/certs/tls.key
             - --ca=/etc/ssl/certs/ca.crt
             - --server-address=kiam-server:443
-            - --gateway-timeout-creation=1s
+            - --gateway-timeout-creation=90s
+            - --whitelist-route-regexp=.*
           env:
             - name: HOST_IP
               valueFrom:
