@@ -1,0 +1,70 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+  # namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - anthony.bible
+    - reg.anthony.bible
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https-mainsite
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: anthony.bible-cert
+    hosts:
+    - anthony.bible
+  - port:
+      number: 443
+      name: https-registration
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: reg.anthony.bible-cert 
+    hosts:
+    - reg.anthony.bible
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+  # namespace: istio-system
+spec:
+  hosts:
+    - anthony.bible
+  gateways:
+  - bookinfo-gateway
+  http:
+  - route:
+     - destination:
+         host: mainsite-service
+         port:
+           number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: registration
+  # namespace: istio-system
+spec:
+  hosts:
+    - reg.anthony.bible
+  gateways:
+  - bookinfo-gateway
+  http:
+  - route:
+     - destination:
+         host: registration-service
+         port:
+           number: 80
