@@ -1,14 +1,32 @@
-apiVersion: skaffold/v2beta1
+apiVersion: skaffold/v2beta10
 kind: Config
 metadata:
-  name: mysite-deployment
+  name: cluster
 build:
   artifacts:
-  - image: mysite-container
-  local:
-    useDockerCLI: true
+  - image: gimpyb/buymebeer-container-prod
+    context: payme.beer
+    docker:
+      dockerfile: Dockerfile
+  - image: gimpyb/myphp-container
+    context: site-fpm
+    docker:
+      dockerfile: Dockerfile
+  - image: gimpyb/mysite-container-prod
+    docker:
+      dockerfile: Dockerfile
+  - image: gimpyb/mystaticsite-container-prod
+    context: staticsite
+    docker:
+      dockerfile: Dockerfile
 deploy:
   kubectl:
     manifests:
     - mysite-dev.yml
-    - redis.yml
+    - cert-manager-deployment/cert-route53.yml
+    - cert-manager-deployment/route53.yaml
+    - cert-manager-deployment/selfsigned-dev.yaml
+    
+    - istio/gateway.yaml
+    - payme.beer/buymebeer-site.yaml
+    - staticsite/mystatic-site.yaml
