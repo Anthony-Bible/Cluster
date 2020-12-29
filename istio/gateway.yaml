@@ -14,6 +14,7 @@ spec:
     hosts:
     - anthony.bible
     - reg.anthony.bible
+    - buyme.beer
     tls:
       httpsRedirect: true
   - port:
@@ -34,6 +35,15 @@ spec:
       credentialName: reg.anthony.bible-cert 
     hosts:
     - reg.anthony.bible
+  - port:
+      number: 443
+      name: https-buymebeer
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: buyme.beer-cert 
+    hosts:
+    - buyme.beer
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -66,5 +76,22 @@ spec:
   - route:
      - destination:
          host: registration-service
+         port:
+           number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: buymebeer
+  # namespace: istio-system
+spec:
+  hosts:
+    - buyme.beer
+  gateways:
+  - bookinfo-gateway
+  http:
+  - route:
+     - destination:
+         host: buymebeer-service
          port:
            number: 80

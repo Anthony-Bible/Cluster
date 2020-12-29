@@ -20,6 +20,7 @@ spec:
         dnsZones:
           - "anthony.bible"
           - "reg.anthony.bible"
+          - "buyme.beer"
       dns01:
         route53:
           region: us-east-1
