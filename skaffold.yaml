@@ -19,6 +19,11 @@ build:
     context: staticsite
     docker:
       dockerfile: Dockerfile
+  - image: gimpyb/passwordexchange-container-prod
+    context: password.exchange/docker
+    docker:
+      dockerfile: Dockerfile
+      noCache: true
 deploy:
   kubectl:
     manifests:
@@ -26,7 +31,6 @@ deploy:
     - cert-manager-deployment/cert-route53.yml
     - cert-manager-deployment/route53.yaml
     - cert-manager-deployment/selfsigned-dev.yaml
-    
-    - istio/gateway.yaml
+    - password.exchange/kubernetes/deployment.yaml
     - payme.beer/buymebeer-site.yaml
     - staticsite/mystatic-site.yaml

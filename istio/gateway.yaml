@@ -12,21 +12,19 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - anthony.bible
     - reg.anthony.bible
     - buyme.beer
+    - payme.beer
     - password.exchange
+    - anthony.bible
     tls:
       httpsRedirect: true
   - port:
-      number: 443
-      name: https-mainsite
-      protocol: HTTPS
-    tls:
-      mode: SIMPLE
-      credentialName: anthony.bible-cert
+      number: 80
+      name: http-general
+      protocol: HTTP
     hosts:
-    - anthony.bible
+    - "*"
   - port:
       number: 443
       name: https-registration
@@ -54,23 +52,15 @@ spec:
       credentialName: password.exchange-cert 
     hosts:
     - password.exchange
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: bookinfo
-  # namespace: istio-system
-spec:
-  hosts:
+  - port:
+      number: 443
+      name: https-mainsite
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: anthony.bible-cert
+    hosts:
     - anthony.bible
-  gateways:
-  - bookinfo-gateway
-  http:
-  - route:
-     - destination:
-         host: mainsite-service
-         port:
-           number: 80
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -122,3 +112,23 @@ spec:
          host: passwordexchange-service
          port:
            number: 80
+###########################################################################
+### DEFAULT SERVICE ###
+###########################################################################
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: z-gateway
+  # namespace: istio-system
+spec:
+  hosts:
+    - "*"
+  gateways:
+  - bookinfo-gateway
+  http:
+  - route:
+     - destination:
+         host: mainsite-service
+         port:
+           number: 80           

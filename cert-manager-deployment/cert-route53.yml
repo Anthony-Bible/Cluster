@@ -40,3 +40,17 @@
       issuerRef:
         name: letsencrypt-prod-route53
         kind: ClusterIssuer
+---
+    apiVersion: cert-manager.io/v1alpha2
+    kind: Certificate
+    metadata:
+      name: password.exchange-cert-route53
+      namespace: istio-system 
+    spec:
+      dnsNames:
+        - password.exchange
+      commonName: password.exchange
+      secretName: password.exchange-cert
+      issuerRef:
+        name: letsencrypt-prod-route53
+        kind: ClusterIssuer

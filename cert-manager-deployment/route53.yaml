@@ -21,6 +21,7 @@ spec:
           - "anthony.bible"
           - "reg.anthony.bible"
           - "buyme.beer"
+          - "password.exchange"
       dns01:
         route53:
           region: us-east-1
