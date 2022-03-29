@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "controllers",
+    srcs = ["slackcommand.go"],
+    importpath = "github.com/Anthony-Bible/password-exchange/app/slackbot/controllers",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_rs_zerolog//log",
+        "@com_github_slack_go_slack//:slack",
+    ],
+)
