@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: bookinfo-gateway
+  name: passwordexchange-gateway
   # namespace: istio-system
 spec:
   selector:
@@ -16,7 +16,11 @@ spec:
     - buyme.beer
     - payme.beer
     - password.exchange
+    - api.password.exchange
     - anthony.bible
+    - anthonybible.com
+    - cache.anthony.bible
+    - dev.password.exchange
     tls:
       httpsRedirect: true
   - port:
@@ -32,6 +36,7 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: reg.anthony.bible-cert 
+      minProtocolVersion: TLSV1_2
     hosts:
     - reg.anthony.bible
   - port:
@@ -41,8 +46,19 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: buyme.beer-cert 
+      minProtocolVersion: TLSV1_2
     hosts:
     - buyme.beer
+  - port:
+      number: 443
+      name: https-devpasswordexchange
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: dev.password.exchange-cert 
+      minProtocolVersion: TLSV1_2
+    hosts:
+    - dev.password.exchange
   - port:
       number: 443
       name: https-passwordexchange
@@ -50,8 +66,19 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: password.exchange-cert 
+      minProtocolVersion: TLSV1_2
     hosts:
     - password.exchange
+  - port:
+      number: 443
+      name: https-apipasswordexchange
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: apipassword.exchange-cert 
+      minProtocolVersion: TLSV1_2
+    hosts:
+    - api.password.exchange
   - port:
       number: 443
       name: https-mainsite
@@ -59,8 +86,53 @@ spec:
     tls:
       mode: SIMPLE
       credentialName: anthony.bible-cert
+      minProtocolVersion: TLSV1_2
     hosts:
     - anthony.bible
+  - port:
+      number: 443
+      name: https-mainsite2
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: anthonybible-cert
+      minProtocolVersion: TLSV1_2
+    hosts:
+    - anthonybible.com
+  - port:
+      number: 443
+      name: https-cache
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: cache.anthony.bible-cert
+      minProtocolVersion: TLSV1_2
+    hosts:
+    - cache.anthony.bible
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: cache
+  # namespace: istio-system
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+
+spec:
+  hosts:
+    - cache.anthony.bible
+  gateways:
+  - passwordexchange-gateway
+  http:
+  - route:
+     - destination:
+         host: bazel-remote-service
+         port:
+           number: 80
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -71,13 +143,17 @@ spec:
   hosts:
     - reg.anthony.bible
   gateways:
-  - bookinfo-gateway
+  - passwordexchange-gateway
   http:
   - route:
      - destination:
          host: registration-service
          port:
            number: 80
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -88,13 +164,62 @@ spec:
   hosts:
     - buyme.beer
   gateways:
-  - bookinfo-gateway
+  - passwordexchange-gateway
   http:
   - route:
      - destination:
          host: buymebeer-service
          port:
            number: 80
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: apipasswordexchange
+  # namespace: istio-system
+  annotations:
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  hosts:
+    - api.password.exchange
+  gateways:
+  - passwordexchange-gateway
+  http:
+  - route:
+     - destination:
+         host: slackbot-service
+         port:
+           number: 80
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: dev.passwordexchange
+  # namespace: istio-system
+spec:
+  hosts:
+    - dev.password.exchange
+  gateways:
+  - passwordexchange-gateway
+  http:
+  - route:
+     - destination:
+         host: passwordexchange-dev-service
+         port:
+           number: 80
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
+      
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -105,13 +230,40 @@ spec:
   hosts:
     - password.exchange
   gateways:
-  - bookinfo-gateway
+  - passwordexchange-gateway
   http:
   - route:
      - destination:
-         host: passwordexchange-service
+         host: passwordexchange-prod-service
          port:
            number: 80
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: anthonybible
+  # namespace: istio-system
+spec:
+  hosts:
+    - anthony.bible
+    - anthonybible.com
+  gateways:
+  - passwordexchange-gateway
+  http:
+  - route:
+     - destination:
+         host: mainsite-service
+         port:
+           number: 80        
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains   
 ###########################################################################
 ### DEFAULT SERVICE ###
 ###########################################################################
@@ -125,10 +277,14 @@ spec:
   hosts:
     - "*"
   gateways:
-  - bookinfo-gateway
+  - passwordexchange-gateway
   http:
   - route:
      - destination:
          host: mainsite-service
          port:
            number: 80           
+       headers:
+            response:
+              set:
+                Strict-Transport-Security: max-age=31536000; includeSubDomains
