@@ -255,6 +255,14 @@ spec:
   gateways:
   - passwordexchange-gateway
   http:
+  - match: 
+    - uri:
+        prefix: /image
+    route:
+    - destination:
+        host: rand-images-service
+        port:
+          number: 8080
   - route:
      - destination:
          host: mainsite-service
